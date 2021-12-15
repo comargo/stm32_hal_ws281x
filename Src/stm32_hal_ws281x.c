@@ -205,7 +205,7 @@ static bool load_next_framebuffer_data(struct CM_HAL_WS281x *ws281x, uint8_t hal
 
 			for (int i = 0; i < 16; ++i) {
 				if ((channel->GPIO_Pin & (GPIO_PIN_0 << i)) != 0) {
-					ws281x_set_pixel(ws281x->dmaBitBuffer+half*24, i, r, g, b);
+					ws281x_set_pixel(ws281x->dmaBitBuffer+half*24, i, r, g, b, channel->colorMode);
 				}
 			}
 

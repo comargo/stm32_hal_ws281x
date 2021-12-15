@@ -13,11 +13,21 @@
 
 #define CM_HAL_WS281X_MAX_CHANNELS 4
 
+enum WS281x_ColorMode {
+  WS281x_RGB,
+  WS281x_RBG,
+  WS281x_GRB,
+  WS281x_GBR,
+  WS281x_BRG,
+  WS281x_BGR
+};
+
 struct CM_HAL_WS281X_Channel {
 	uint32_t GPIO_Pin;
 	uint8_t *frameBuffer;
 	size_t frameBufferSize;
 	size_t frameBufferPos;
+	enum WS281x_ColorMode colorMode;
 };
 
 enum WS281x_State {
@@ -25,6 +35,7 @@ enum WS281x_State {
 	WS281x_Busy,
 	WS281x_Finish,
 };
+
 
 struct CM_HAL_WS281x {
 	GPIO_TypeDef *gpio;

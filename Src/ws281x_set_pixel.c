@@ -8,6 +8,7 @@
 #define SETPIX_4
 #include <stm32f1xx_hal.h>
 #include <stdint.h>
+#include "ws281x_set_pixel.h"
 
 // Gamma correction table
 //const uint8_t gammaTable[] = {
@@ -40,18 +41,51 @@
 #define varGetBit(var,bit) (Var_GetBit_BB((uint32_t)&var,bit))
 
 
-void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green, uint8_t blue)
+void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green, uint8_t blue, enum WS281x_ColorMode colorMode)
 {
 
 	// Apply gamma
 //	red = gammaTable[red];
 //	green = gammaTable[green];
 //	blue = gammaTable[blue];
+  uint8_t pix1, pix2, pix3;
+  switch(colorMode) {
+  case WS281x_RGB:
+    pix1 = red;
+    pix2 = green;
+    pix3 = blue;
+    break;
+  case WS281x_RBG:
+    pix1 = red;
+    pix2 = blue;
+    pix3 = green;
+    break;
+  case WS281x_GRB:
+    pix1 = green;
+    pix2 = red;
+    pix3 = blue;
+    break;
+  case WS281x_GBR:
+    pix1 = green;
+    pix2 = blue;
+    pix3 = red;
+    break;
+  case WS281x_BRG:
+    pix1 = blue;
+    pix2 = red;
+    pix3 = green;
+    break;
+  case WS281x_BGR:
+    pix1 = blue;
+    pix2 = green;
+    pix3 = red;
+    break;
+  }
 
 
-	uint32_t invRed = ~red;
-	uint32_t invGreen = ~green;
-	uint32_t invBlue = ~blue;
+	uint32_t invPix1 = ~pix1;
+	uint32_t invPix2 = ~pix2;
+	uint32_t invPix3 = ~pix3;
 
 
 
@@ -68,9 +102,9 @@ void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green
 		ws2812bDmaBitBuffer[(16+i)] &= calcClearPin;
 
 		// write new data for pixel
-		ws2812bDmaBitBuffer[(i)] |= (((((invGreen)<<i) & 0x80)>>7)<<pin);
-		ws2812bDmaBitBuffer[(8+i)] |= (((((invRed)<<i) & 0x80)>>7)<<pin);
-		ws2812bDmaBitBuffer[(16+i)] |= (((((invBlue)<<i) & 0x80)>>7)<<pin);
+		ws2812bDmaBitBuffer[(i)] |= (((((invPix1)<<i) & 0x80)>>7)<<pin);
+		ws2812bDmaBitBuffer[(8+i)] |= (((((invPix2)<<i) & 0x80)>>7)<<pin);
+		ws2812bDmaBitBuffer[(16+i)] |= (((((invPix3)<<i) & 0x80)>>7)<<pin);
 	}
 #elif defined(SETPIX_2)
 	uint8_t i;
@@ -78,131 +112,131 @@ void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green
 	{
 		// Set or clear the data for the pixel
 
-		if(((invGreen)<<i) & 0x80)
+		if(((invPix1)<<i) & 0x80)
 			varSetBit(ws2812bDmaBitBuffer[(i)], pin);
 		else
 			varResetBit(ws2812bDmaBitBuffer[(i)], pin);
 
-		if(((invRed)<<i) & 0x80)
+		if(((invPix2)<<i) & 0x80)
 			varSetBit(ws2812bDmaBitBuffer[(8+i)], pin);
 		else
 			varResetBit(ws2812bDmaBitBuffer[(8+i)], pin);
 
-		if(((invBlue)<<i) & 0x80)
+		if(((invPix3)<<i) & 0x80)
 			varSetBit(ws2812bDmaBitBuffer[(16+i)], pin);
 		else
 			varResetBit(ws2812bDmaBitBuffer[(16+i)], pin);
 
 	}
 #elif defined(SETPIX_3)
-	ws2812bDmaBitBuffer[(0)] |= (((((invGreen)<<0) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+0)] |= (((((invRed)<<0) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+0)] |= (((((invBlue)<<0) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(0)] |= (((((invPix1)<<0) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+0)] |= (((((invPix2)<<0) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+0)] |= (((((invPix3)<<0) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(1)] |= (((((invGreen)<<1) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+1)] |= (((((invRed)<<1) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+1)] |= (((((invBlue)<<1) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(1)] |= (((((invPix1)<<1) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+1)] |= (((((invPix2)<<1) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+1)] |= (((((invPix3)<<1) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(2)] |= (((((invGreen)<<2) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+2)] |= (((((invRed)<<2) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+2)] |= (((((invBlue)<<2) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(2)] |= (((((invPix1)<<2) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+2)] |= (((((invPix2)<<2) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+2)] |= (((((invPix3)<<2) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(3)] |= (((((invGreen)<<3) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+3)] |= (((((invRed)<<3) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+3)] |= (((((invBlue)<<3) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(3)] |= (((((invPix1)<<3) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+3)] |= (((((invPix2)<<3) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+3)] |= (((((invPix3)<<3) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(4)] |= (((((invGreen)<<4) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+4)] |= (((((invRed)<<4) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+4)] |= (((((invBlue)<<4) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(4)] |= (((((invPix1)<<4) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+4)] |= (((((invPix2)<<4) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+4)] |= (((((invPix3)<<4) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(5)] |= (((((invGreen)<<5) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+5)] |= (((((invRed)<<5) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+5)] |= (((((invBlue)<<5) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(5)] |= (((((invPix1)<<5) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+5)] |= (((((invPix2)<<5) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+5)] |= (((((invPix3)<<5) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(6)] |= (((((invGreen)<<6) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+6)] |= (((((invRed)<<6) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+6)] |= (((((invBlue)<<6) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(6)] |= (((((invPix1)<<6) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+6)] |= (((((invPix2)<<6) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+6)] |= (((((invPix3)<<6) & 0x80)>>7)<<pin);
 
-	ws2812bDmaBitBuffer[(7)] |= (((((invGreen)<<7) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(8+7)] |= (((((invRed)<<7) & 0x80)>>7)<<pin);
-	ws2812bDmaBitBuffer[(16+7)] |= (((((invBlue)<<7) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(7)] |= (((((invPix1)<<7) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(8+7)] |= (((((invPix2)<<7) & 0x80)>>7)<<pin);
+	ws2812bDmaBitBuffer[(16+7)] |= (((((invPix3)<<7) & 0x80)>>7)<<pin);
 #elif defined(SETPIX_4)
 
 	// Bitband optimizations with pure increments, 5us interrupts
 	__IO uint32_t *bitBand = BITBAND_SRAM(buffer, pin);
 
-	*bitBand =  (invGreen >> 7);
+	*bitBand =  (invPix1 >> 7);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 6);
+	*bitBand = (invPix1 >> 6);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 5);
+	*bitBand = (invPix1 >> 5);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 4);
+	*bitBand = (invPix1 >> 4);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 3);
+	*bitBand = (invPix1 >> 3);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 2);
+	*bitBand = (invPix1 >> 2);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 1);
+	*bitBand = (invPix1 >> 1);
 	bitBand+=16;
 
-	*bitBand = (invGreen >> 0);
+	*bitBand = (invPix1 >> 0);
 	bitBand+=16;
 
 	// RED
-	*bitBand =  (invRed >> 7);
+	*bitBand =  (invPix2 >> 7);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 6);
+	*bitBand = (invPix2 >> 6);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 5);
+	*bitBand = (invPix2 >> 5);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 4);
+	*bitBand = (invPix2 >> 4);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 3);
+	*bitBand = (invPix2 >> 3);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 2);
+	*bitBand = (invPix2 >> 2);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 1);
+	*bitBand = (invPix2 >> 1);
 	bitBand+=16;
 
-	*bitBand = (invRed >> 0);
+	*bitBand = (invPix2 >> 0);
 	bitBand+=16;
 
 	// BLUE
-	*bitBand =  (invBlue >> 7);
+	*bitBand =  (invPix3 >> 7);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 6);
+	*bitBand = (invPix3 >> 6);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 5);
+	*bitBand = (invPix3 >> 5);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 4);
+	*bitBand = (invPix3 >> 4);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 3);
+	*bitBand = (invPix3 >> 3);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 2);
+	*bitBand = (invPix3 >> 2);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 1);
+	*bitBand = (invPix3 >> 1);
 	bitBand+=16;
 
-	*bitBand = (invBlue >> 0);
+	*bitBand = (invPix3 >> 0);
 	bitBand+=16;
 
 #elif defined(SETPIX_5)
