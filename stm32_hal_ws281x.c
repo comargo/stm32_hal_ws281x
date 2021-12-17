@@ -192,9 +192,9 @@ static void ws281x_dma_init(struct CM_HAL_WS281x *ws281x)
 //	HAL_DMA_RegisterCallback(&ws281x->dmaCC2, HAL_DMA_XFER_HALFCPLT_CB_ID, dma_transfer_half_handler);
 }
 
-static bool load_next_framebuffer_data(struct CM_HAL_WS281x *ws281x, uint8_t half)
+static uint8_t load_next_framebuffer_data(struct CM_HAL_WS281x *ws281x, uint8_t half)
 {
-	bool has_data = false; // Is there any data in any channel (by default NO)
+	uint8_t has_data = 0; // Is there any data in any channel (by default NO)
 	for (int chanId = 0; chanId < ws281x->nChannels; ++chanId) {
 		// Is there any data in channel[chanId]
 		struct CM_HAL_WS281X_Channel *channel = ws281x->channels[chanId];
@@ -209,7 +209,7 @@ static bool load_next_framebuffer_data(struct CM_HAL_WS281x *ws281x, uint8_t hal
 				}
 			}
 
-			has_data = true; // There are some data in one of the channels
+			has_data = 1; // There are some data in one of the channels
 		}
 	}
 	return has_data;

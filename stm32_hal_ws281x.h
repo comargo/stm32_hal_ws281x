@@ -8,7 +8,6 @@
 #ifndef _STM32_HAL_WS281X_H_
 #define _STM32_HAL_WS281X_H_
 
-#include <stdbool.h>
 #include "stm32f1xx_hal.h"
 
 #define CM_HAL_WS281X_MAX_CHANNELS 4
