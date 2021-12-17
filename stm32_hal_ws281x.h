@@ -12,16 +12,18 @@
 
 #define CM_HAL_WS281X_MAX_CHANNELS 4
 
-enum WS281x_ColorMode {
-  WS281x_RGB,
-  WS281x_RBG,
-  WS281x_GRB,
-  WS281x_GBR,
-  WS281x_BRG,
-  WS281x_BGR
+enum WS281x_ColorMode
+{
+	WS281x_RGB,
+	WS281x_RBG,
+	WS281x_GRB,
+	WS281x_GBR,
+	WS281x_BRG,
+	WS281x_BGR
 };
 
-struct CM_HAL_WS281X_Channel {
+struct CM_HAL_WS281X_Channel
+{
 	uint32_t GPIO_Pin;
 	uint8_t *frameBuffer;
 	size_t frameBufferSize;
@@ -29,14 +31,15 @@ struct CM_HAL_WS281X_Channel {
 	enum WS281x_ColorMode colorMode;
 };
 
-enum WS281x_State {
+enum WS281x_State
+{
 	WS281x_Ready,
 	WS281x_Busy,
 	WS281x_Finish,
 };
 
-
-struct CM_HAL_WS281x {
+struct CM_HAL_WS281x
+{
 	GPIO_TypeDef *gpio;
 	TIM_HandleTypeDef htim;
 	IRQn_Type TIM_IRQn;
@@ -52,12 +55,11 @@ struct CM_HAL_WS281x {
 	uint32_t highPins;
 	uint32_t lowPins;
 
-	struct CM_HAL_WS281X_Channel * channels[CM_HAL_WS281X_MAX_CHANNELS];
+	struct CM_HAL_WS281X_Channel *channels[CM_HAL_WS281X_MAX_CHANNELS];
 	int nChannels;
 
-
 	// framebuffer - buffer for 2 LEDs - two times 24 bits
-	uint16_t dmaBitBuffer[24*2];
+	uint16_t dmaBitBuffer[24 * 2];
 };
 
 void CM_HAL_WS281X_Init(struct CM_HAL_WS281x *ws281x, GPIO_TypeDef *GPIOx, TIM_TypeDef *tim);

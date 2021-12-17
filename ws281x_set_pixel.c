@@ -40,55 +40,51 @@
 #define varResetBit(var,bit) (Var_ResetBit_BB((uint32_t)&var,bit))
 #define varGetBit(var,bit) (Var_GetBit_BB((uint32_t)&var,bit))
 
-
-void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green, uint8_t blue, enum WS281x_ColorMode colorMode)
+void ws281x_set_pixel(uint16_t *buffer, uint16_t pin, uint8_t red, uint8_t green, uint8_t blue,
+		enum WS281x_ColorMode colorMode)
 {
 
 	// Apply gamma
 //	red = gammaTable[red];
 //	green = gammaTable[green];
 //	blue = gammaTable[blue];
-  uint8_t pix1, pix2, pix3;
-  switch(colorMode) {
-  case WS281x_RGB:
-    pix1 = red;
-    pix2 = green;
-    pix3 = blue;
-    break;
-  case WS281x_RBG:
-    pix1 = red;
-    pix2 = blue;
-    pix3 = green;
-    break;
-  case WS281x_GRB:
-    pix1 = green;
-    pix2 = red;
-    pix3 = blue;
-    break;
-  case WS281x_GBR:
-    pix1 = green;
-    pix2 = blue;
-    pix3 = red;
-    break;
-  case WS281x_BRG:
-    pix1 = blue;
-    pix2 = red;
-    pix3 = green;
-    break;
-  case WS281x_BGR:
-    pix1 = blue;
-    pix2 = green;
-    pix3 = red;
-    break;
-  }
-
+	uint8_t pix1, pix2, pix3;
+	switch (colorMode) {
+	case WS281x_RGB:
+		pix1 = red;
+		pix2 = green;
+		pix3 = blue;
+		break;
+	case WS281x_RBG:
+		pix1 = red;
+		pix2 = blue;
+		pix3 = green;
+		break;
+	case WS281x_GRB:
+		pix1 = green;
+		pix2 = red;
+		pix3 = blue;
+		break;
+	case WS281x_GBR:
+		pix1 = green;
+		pix2 = blue;
+		pix3 = red;
+		break;
+	case WS281x_BRG:
+		pix1 = blue;
+		pix2 = red;
+		pix3 = green;
+		break;
+	case WS281x_BGR:
+		pix1 = blue;
+		pix2 = green;
+		pix3 = red;
+		break;
+	}
 
 	uint32_t invPix1 = ~pix1;
 	uint32_t invPix2 = ~pix2;
 	uint32_t invPix3 = ~pix3;
-
-
-
 
 #if defined(SETPIX_1)
 	uint8_t i;
@@ -113,19 +109,19 @@ void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green
 		// Set or clear the data for the pixel
 
 		if(((invPix1)<<i) & 0x80)
-			varSetBit(ws2812bDmaBitBuffer[(i)], pin);
+		varSetBit(ws2812bDmaBitBuffer[(i)], pin);
 		else
-			varResetBit(ws2812bDmaBitBuffer[(i)], pin);
+		varResetBit(ws2812bDmaBitBuffer[(i)], pin);
 
 		if(((invPix2)<<i) & 0x80)
-			varSetBit(ws2812bDmaBitBuffer[(8+i)], pin);
+		varSetBit(ws2812bDmaBitBuffer[(8+i)], pin);
 		else
-			varResetBit(ws2812bDmaBitBuffer[(8+i)], pin);
+		varResetBit(ws2812bDmaBitBuffer[(8+i)], pin);
 
 		if(((invPix3)<<i) & 0x80)
-			varSetBit(ws2812bDmaBitBuffer[(16+i)], pin);
+		varSetBit(ws2812bDmaBitBuffer[(16+i)], pin);
 		else
-			varResetBit(ws2812bDmaBitBuffer[(16+i)], pin);
+		varResetBit(ws2812bDmaBitBuffer[(16+i)], pin);
 
 	}
 #elif defined(SETPIX_3)
@@ -165,79 +161,79 @@ void ws281x_set_pixel(uint16_t* buffer, uint16_t pin, uint8_t red, uint8_t green
 	// Bitband optimizations with pure increments, 5us interrupts
 	__IO uint32_t *bitBand = BITBAND_SRAM(buffer, pin);
 
-	*bitBand =  (invPix1 >> 7);
-	bitBand+=16;
+	*bitBand = (invPix1 >> 7);
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 6);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 5);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 4);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 3);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 2);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 1);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix1 >> 0);
-	bitBand+=16;
+	bitBand += 16;
 
 	// RED
-	*bitBand =  (invPix2 >> 7);
-	bitBand+=16;
+	*bitBand = (invPix2 >> 7);
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 6);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 5);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 4);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 3);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 2);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 1);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix2 >> 0);
-	bitBand+=16;
+	bitBand += 16;
 
 	// BLUE
-	*bitBand =  (invPix3 >> 7);
-	bitBand+=16;
+	*bitBand = (invPix3 >> 7);
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 6);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 5);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 4);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 3);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 2);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 1);
-	bitBand+=16;
+	bitBand += 16;
 
 	*bitBand = (invPix3 >> 0);
-	bitBand+=16;
+	bitBand += 16;
 
 #elif defined(SETPIX_5)
 
