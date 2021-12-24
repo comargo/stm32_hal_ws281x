@@ -50,11 +50,6 @@ void ws281x_set_pixel(uint16_t *buffer, uint16_t pin, uint8_t red, uint8_t green
 //	blue = gammaTable[blue];
 	uint8_t pix1, pix2, pix3;
 	switch (colorMode) {
-	case WS281x_RGB:
-		pix1 = red;
-		pix2 = green;
-		pix3 = blue;
-		break;
 	case WS281x_RBG:
 		pix1 = red;
 		pix2 = blue;
@@ -79,6 +74,12 @@ void ws281x_set_pixel(uint16_t *buffer, uint16_t pin, uint8_t red, uint8_t green
 		pix1 = blue;
 		pix2 = green;
 		pix3 = red;
+		break;
+	case WS281x_RGB:
+	default:
+		pix1 = red;
+		pix2 = green;
+		pix3 = blue;
 		break;
 	}
 
